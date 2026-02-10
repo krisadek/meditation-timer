@@ -563,6 +563,31 @@
         // ───── Speech Synthesis Engine ─────
         let voiceEnabled = true;
         let currentLang = 'en-US';
+        let voicesLoaded = false;
+
+        // Wait for voices to load
+        function ensureVoicesLoaded() {
+            return new Promise((resolve) => {
+                const voices = window.speechSynthesis.getVoices();
+                if (voices.length > 0) {
+                    voicesLoaded = true;
+                    console.log('Voices loaded:', voices.length, 'voices available');
+                    resolve(voices);
+                } else {
+                    window.speechSynthesis.onvoiceschanged = () => {
+                        const voices = window.speechSynthesis.getVoices();
+                        voicesLoaded = true;
+                        console.log('Voices loaded (after wait):', voices.length, 'voices available');
+                        resolve(voices);
+                    };
+                }
+            });
+        }
+
+        // Load voices on page load
+        if ('speechSynthesis' in window) {
+            ensureVoicesLoaded();
+        }
 
         const translations = {
             'nb-NO': {
@@ -589,8 +614,14 @@
             }
         };
 
-        function speak(text, options = {}) {
-            if (!voiceEnabled || !('speechSynthesis' in window)) return;
+        async function speak(text, options = {}) {
+            if (!voiceEnabled || !('speechSynthesis' in window)) {
+                console.log('Speech disabled or not supported');
+                return;
+            }
+
+            // Ensure voices are loaded
+            await ensureVoicesLoaded();
 
             // Cancel any ongoing speech
             window.speechSynthesis.cancel();
@@ -603,11 +634,24 @@
 
             // Try to select a better voice if available
             const voices = window.speechSynthesis.getVoices();
+            console.log('Available voices:', voices.length);
+
             const preferredVoice = voices.find(v =>
                 v.lang.startsWith(currentLang.split('-')[0]) &&
                 (v.name.includes('Female') || v.name.includes('Nora') || v.name.includes('Samantha'))
             );
-            if (preferredVoice) utterance.voice = preferredVoice;
+
+            if (preferredVoice) {
+                utterance.voice = preferredVoice;
+                console.log('Using voice:', preferredVoice.name);
+            } else {
+                console.log('Using default voice');
+            }
+
+            // Add event listeners for debugging
+            utterance.onstart = () => console.log('Speech started:', text.substring(0, 50));
+            utterance.onend = () => console.log('Speech ended');
+            utterance.onerror = (e) => console.error('Speech error:', e);
 
             window.speechSynthesis.speak(utterance);
         }
@@ -1341,13 +1385,6 @@ One more deep breath... and let it go.
         // ───── Voice Controls ─────
         const voiceToggle = document.getElementById('voice-toggle');
         const langSelect = document.getElementById('lang-select');
-
-        // Load voices when available
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.onvoiceschanged = () => {
-                window.speechSynthesis.getVoices();
-            };
-        }
 
         voiceToggle.addEventListener('click', () => {
             voiceEnabled = !voiceEnabled;
