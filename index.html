@@ -1078,26 +1078,36 @@ One more deep breath... and let it go.
 
         // Schedule speech events for meditation
         let scheduledEvents = [];
-        let guidedMeditationEnabled = false;
+        let guidedMeditationEnabled = true; // Enabled by default
 
         function scheduleGuidedMeditation(scriptKey, duration) {
+            console.log('scheduleGuidedMeditation called:', { scriptKey, duration, guidedMeditationEnabled, currentLang });
             clearScheduledEvents();
-            if (!guidedMeditationEnabled) return;
+            if (!guidedMeditationEnabled) {
+                console.log('Guided meditation is disabled');
+                return;
+            }
 
             const script = meditationScripts[currentLang]?.[scriptKey];
-            if (!script) return;
+            if (!script) {
+                console.log('No script found for:', scriptKey, currentLang);
+                return;
+            }
 
             const events = parseScript(script);
+            console.log('Parsed events:', events.length, 'events');
 
             events.forEach(event => {
                 const timeFromEnd = duration - event.time;
                 if (timeFromEnd >= 0) {
                     const timeoutId = setTimeout(() => {
+                        console.log('Speaking:', event.text.substring(0, 50));
                         speak(event.text, { rate: 0.8, pitch: 0.9 });
                     }, event.time * 1000);
                     scheduledEvents.push(timeoutId);
                 }
             });
+            console.log('Scheduled', scheduledEvents.length, 'speech events');
         }
 
         function clearScheduledEvents() {
