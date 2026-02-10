@@ -1,0 +1,1476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meditation Timer</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            text-align: center;
+            padding: 2.5rem 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 24px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            width: 420px;
+        }
+
+        h1 {
+            font-size: 1.4rem;
+            font-weight: 300;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            margin-bottom: 1.8rem;
+            color: #a8d8ea;
+        }
+
+        /* Mode Selector */
+        .mode-selector {
+            display: flex;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 2rem;
+            gap: 4px;
+        }
+
+        .mode-btn {
+            flex: 1;
+            padding: 0.6rem 1rem;
+            border: none;
+            border-radius: 10px;
+            background: transparent;
+            color: #808e96;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 0.04em;
+            transition: all 0.3s;
+        }
+
+        .mode-btn:hover { color: #c0c0c0; }
+
+        .mode-btn.active {
+            background: rgba(168, 216, 234, 0.15);
+            color: #a8d8ea;
+        }
+
+        /* Panels */
+        .mode-panel { display: none; }
+        .mode-panel.active { display: block; }
+
+        /* Timer Ring (shared) */
+        .timer-ring {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 2rem;
+        }
+
+        .timer-ring svg { transform: rotate(-90deg); }
+
+        .timer-ring .bg {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.06);
+            stroke-width: 6;
+        }
+
+        .timer-ring .progress {
+            fill: none;
+            stroke: #a8d8ea;
+            stroke-width: 6;
+            stroke-linecap: round;
+            stroke-dasharray: 596.9;
+            stroke-dashoffset: 0;
+            transition: stroke-dashoffset 0.5s linear;
+        }
+
+        .timer-display {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2.8rem;
+            font-weight: 200;
+            letter-spacing: 0.05em;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Section Labels */
+        .section-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: #6a8a99;
+            margin-bottom: 0.6rem;
+        }
+
+        /* Pill Buttons (durations, themes, sounds) */
+        .pill-row {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .pill {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #b0b0b0;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.82rem;
+            transition: all 0.3s;
+        }
+
+        .pill:hover {
+            background: rgba(168, 216, 234, 0.15);
+            color: #e0e0e0;
+        }
+
+        .pill.active {
+            background: rgba(168, 216, 234, 0.2);
+            border-color: #a8d8ea;
+            color: #a8d8ea;
+        }
+
+        .pill:disabled { opacity: 0.35; cursor: default; }
+        .pill:disabled:hover { background: rgba(255, 255, 255, 0.06); color: #b0b0b0; }
+
+        /* Theme cards for guided mode */
+        .theme-row {
+            display: flex;
+            justify-content: center;
+            gap: 0.6rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .theme-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 0.9rem 0.6rem;
+            width: 105px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .theme-card:hover {
+            background: rgba(168, 216, 234, 0.1);
+            border-color: rgba(168, 216, 234, 0.25);
+        }
+
+        .theme-card.active {
+            background: rgba(168, 216, 234, 0.12);
+            border-color: #a8d8ea;
+        }
+
+        .theme-card:disabled { opacity: 0.35; cursor: default; }
+        .theme-card:disabled:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .theme-icon { font-size: 1.6rem; margin-bottom: 0.4rem; }
+
+        .theme-name {
+            font-size: 0.78rem;
+            color: #c0d0d8;
+            font-weight: 400;
+        }
+
+        .theme-card.active .theme-name { color: #a8d8ea; }
+
+        /* Now-playing label */
+        .now-playing {
+            font-size: 0.78rem;
+            color: #6a8a99;
+            margin-bottom: 1.5rem;
+            min-height: 1.2em;
+            font-style: italic;
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .control-btn {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.06);
+            color: #e0e0e0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .control-btn:hover {
+            background: rgba(168, 216, 234, 0.15);
+            border-color: rgba(168, 216, 234, 0.4);
+        }
+
+        .control-btn:disabled { opacity: 0.3; cursor: default; }
+        .control-btn:disabled:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .control-btn svg { width: 20px; height: 20px; fill: currentColor; }
+
+        /* Message */
+        .message {
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            font-weight: 300;
+            color: #a8d8ea;
+            min-height: 1.4em;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .message.visible { opacity: 1; }
+
+        /* Background sound toggle for self-guided */
+        .sound-toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .sound-toggle-label {
+            font-size: 0.78rem;
+            color: #6a8a99;
+        }
+
+        .toggle {
+            position: relative;
+            width: 40px;
+            height: 22px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 11px;
+            cursor: pointer;
+            border: none;
+            transition: background 0.3s;
+        }
+
+        .toggle.on { background: rgba(168, 216, 234, 0.35); }
+
+        .toggle-knob {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 16px;
+            height: 16px;
+            background: #c0d0d8;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+
+        .toggle.on .toggle-knob {
+            transform: translateX(18px);
+            background: #a8d8ea;
+        }
+
+        .bg-sound-select {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s, margin-bottom 0.3s;
+        }
+
+        .bg-sound-select.open {
+            max-height: 50px;
+        }
+
+        /* Voice Controls */
+        .voice-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding: 0.8rem;
+            background: rgba(0, 0, 0, 0.15);
+            border-radius: 12px;
+        }
+
+        .voice-control-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .voice-label {
+            font-size: 0.78rem;
+            color: #6a8a99;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .lang-select {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #b0b0b0;
+            padding: 0.35rem 0.7rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+        }
+
+        .lang-select:hover {
+            background: rgba(168, 216, 234, 0.15);
+            color: #e0e0e0;
+        }
+
+        .lang-select option {
+            background: #1a2933;
+            color: #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Meditation</h1>
+
+        <!-- Mode Selector -->
+        <div class="mode-selector">
+            <button class="mode-btn active" data-mode="guided">Guided</button>
+            <button class="mode-btn" data-mode="self">Self-Guided</button>
+        </div>
+
+        <!-- Voice Controls -->
+        <div class="voice-controls">
+            <div class="voice-control-group">
+                <span class="voice-label">🔊 Voice</span>
+                <button class="toggle on" id="voice-toggle">
+                    <div class="toggle-knob"></div>
+                </button>
+            </div>
+            <div class="voice-control-group">
+                <span class="voice-label">Language</span>
+                <select class="lang-select" id="lang-select">
+                    <option value="nb-NO">Norsk</option>
+                    <option value="en-US">English</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- ====== GUIDED MODE ====== -->
+        <div class="mode-panel active" id="guided-panel">
+            <div class="sound-toggle-row" style="margin-bottom: 1.5rem;">
+                <span class="sound-toggle-label">🎙️ Voice Guidance</span>
+                <button class="toggle on" id="guided-meditation-toggle">
+                    <div class="toggle-knob"></div>
+                </button>
+            </div>
+
+            <div class="section-label">Theme</div>
+            <div class="theme-row">
+                <button class="theme-card active" data-theme="relaxation">
+                    <div class="theme-icon">&#127754;</div>
+                    <div class="theme-name">Relaxation</div>
+                </button>
+                <button class="theme-card" data-theme="sleep">
+                    <div class="theme-icon">&#127769;</div>
+                    <div class="theme-name">Sleep</div>
+                </button>
+                <button class="theme-card" data-theme="focus">
+                    <div class="theme-icon">&#129504;</div>
+                    <div class="theme-name">Focus</div>
+                </button>
+            </div>
+
+            <div class="section-label">Duration</div>
+            <div class="pill-row" id="guided-durations">
+                <button class="pill active" data-minutes="5">5 min</button>
+                <button class="pill" data-minutes="10">10 min</button>
+                <button class="pill" data-minutes="15">15 min</button>
+                <button class="pill" data-minutes="20">20 min</button>
+            </div>
+
+            <div class="timer-ring" id="guided-ring">
+                <svg width="200" height="200">
+                    <circle class="bg" cx="100" cy="100" r="95" />
+                    <circle class="progress" cx="100" cy="100" r="95" />
+                </svg>
+                <div class="timer-display" id="guided-display">5:00</div>
+            </div>
+
+            <div class="now-playing" id="guided-now-playing"></div>
+
+            <div class="controls">
+                <button class="control-btn" id="guided-startBtn" title="Start">
+                    <svg viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21" /></svg>
+                </button>
+                <button class="control-btn" id="guided-pauseBtn" title="Pause" disabled>
+                    <svg viewBox="0 0 24 24"><rect x="5" y="3" width="4" height="18"/><rect x="15" y="3" width="4" height="18"/></svg>
+                </button>
+                <button class="control-btn" id="guided-resetBtn" title="Reset" disabled>
+                    <svg viewBox="0 0 24 24"><path d="M12 4V1L7 6l5 5V7a6 6 0 110 10 5.97 5.97 0 01-4.24-1.76l-1.42 1.42A8 8 0 1012 4z"/></svg>
+                </button>
+            </div>
+
+            <div class="message" id="guided-message"></div>
+        </div>
+
+        <!-- ====== SELF-GUIDED MODE ====== -->
+        <div class="mode-panel" id="self-panel">
+            <div class="section-label">Duration</div>
+            <div class="pill-row" id="self-durations">
+                <button class="pill active" data-minutes="5">5 min</button>
+                <button class="pill" data-minutes="10">10 min</button>
+                <button class="pill" data-minutes="15">15 min</button>
+                <button class="pill" data-minutes="20">20 min</button>
+            </div>
+
+            <div class="timer-ring" id="self-ring">
+                <svg width="200" height="200">
+                    <circle class="bg" cx="100" cy="100" r="95" />
+                    <circle class="progress" cx="100" cy="100" r="95" />
+                </svg>
+                <div class="timer-display" id="self-display">5:00</div>
+            </div>
+
+            <div class="sound-toggle-row">
+                <span class="sound-toggle-label">Background sound</span>
+                <button class="toggle" id="bg-sound-toggle">
+                    <div class="toggle-knob"></div>
+                </button>
+            </div>
+
+            <div class="bg-sound-select" id="bg-sound-select">
+                <button class="pill active" data-sound="rain">Rain</button>
+                <button class="pill" data-sound="ocean">Ocean</button>
+                <button class="pill" data-sound="wind">Wind</button>
+            </div>
+
+            <div class="controls">
+                <button class="control-btn" id="self-startBtn" title="Start">
+                    <svg viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21" /></svg>
+                </button>
+                <button class="control-btn" id="self-pauseBtn" title="Pause" disabled>
+                    <svg viewBox="0 0 24 24"><rect x="5" y="3" width="4" height="18"/><rect x="15" y="3" width="4" height="18"/></svg>
+                </button>
+                <button class="control-btn" id="self-resetBtn" title="Reset" disabled>
+                    <svg viewBox="0 0 24 24"><path d="M12 4V1L7 6l5 5V7a6 6 0 110 10 5.97 5.97 0 01-4.24-1.76l-1.42 1.42A8 8 0 1012 4z"/></svg>
+                </button>
+            </div>
+
+            <div class="message" id="self-message"></div>
+        </div>
+    </div>
+
+    <script>
+    (() => {
+        // ───── Speech Synthesis Engine ─────
+        let voiceEnabled = true;
+        let currentLang = 'nb-NO';
+
+        const translations = {
+            'nb-NO': {
+                start: 'Begynn meditasjonen din',
+                pause: 'Pause',
+                resume: 'Fortsett',
+                complete: 'Sesjonen er fullført. Namaste.',
+                relaxation: 'Avslappingsmeditasjon',
+                sleep: 'Søvnmeditasjon',
+                focus: 'Fokusmeditasjon',
+                minutes: 'minutter',
+                remaining: 'igjen'
+            },
+            'en-US': {
+                start: 'Begin your meditation',
+                pause: 'Paused',
+                resume: 'Resume',
+                complete: 'Session complete. Namaste.',
+                relaxation: 'Relaxation meditation',
+                sleep: 'Sleep meditation',
+                focus: 'Focus meditation',
+                minutes: 'minutes',
+                remaining: 'remaining'
+            }
+        };
+
+        function speak(text, options = {}) {
+            if (!voiceEnabled || !('speechSynthesis' in window)) return;
+
+            // Cancel any ongoing speech
+            window.speechSynthesis.cancel();
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = currentLang;
+            utterance.rate = options.rate || 0.85;  // Slower for meditation
+            utterance.pitch = options.pitch || 0.9; // Slightly lower pitch
+            utterance.volume = options.volume || 0.8;
+
+            // Try to select a better voice if available
+            const voices = window.speechSynthesis.getVoices();
+            const preferredVoice = voices.find(v =>
+                v.lang.startsWith(currentLang.split('-')[0]) &&
+                (v.name.includes('Female') || v.name.includes('Nora') || v.name.includes('Samantha'))
+            );
+            if (preferredVoice) utterance.voice = preferredVoice;
+
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function translate(key) {
+            return translations[currentLang][key] || key;
+        }
+
+        // ───── Meditation Scripts ─────
+        const meditationScripts = {
+            'nb-NO': {
+                'relaxation-5': `[0:00] Velkommen til denne 5-minutters avslappingsmeditasjonen.
+
+Finn en komfortabel posisjon, enten sittende eller liggende. La øynene lukkes forsiktig.
+
+[0:15] Begynn med å ta et dypt pust inn gjennom nesen, føl magen din utvide seg... og slipp langsomt ut gjennom munnen.
+
+[0:30] Ta et nytt dypt pust inn... føl den kjølige luften komme inn i neseborene dine... og pust ut fullstendig, slipp all spenning.
+
+Ett pust til... og slipp det.
+
+[0:50] La nå pusten din returnere til sin naturlige rytme. Legg merke til den myke hevingen og senkingen av magen din med hvert pust.
+
+[1:10] Bring oppmerksomheten din til toppen av hodet. Legg merke til eventuelle fornemmelser der uten å prøve å endre noe. Bare observer.
+
+[1:25] La bevisstheten din flyte ned til ansiktet ditt. Slipp all spenning i pannen... myk opp musklene rundt øynene... og slapp av i kjeven.
+
+[1:45] Legg merke til skuldrene dine. Hvis de holder på spenning, forestill deg at den smelter bort med neste utpust. La skuldrene synke og mykne.
+
+[2:05] Bring bevisstheten til brystet og magen. Føl den myke bevegelsen av pusten din. Med hvert utpust, la deg selv synke dypere inn i avslapning.
+
+[PAUSE 10]
+
+[2:25] Legg merke til armene og hendene dine. La dem føles tunge og avslappet. Slipp alt grep eller holding.
+
+[2:40] Bring oppmerksomheten til bena dine. Føl vekten av dem. Legg merke til føttene dine som hviler. La hele underkroppen din slappe helt av.
+
+[3:00] Utvid nå bevisstheten din til å inkludere hele kroppen. Føl deg selv som en helhet, som puster naturlig, i ro.
+
+[PAUSE 15]
+
+[3:25] Mens du hviler her, gjenta stille for deg selv: "Jeg er rolig... Jeg er avslappet... Jeg er i fred."
+
+[PAUSE 20]
+
+[4:00] Legg merke til hvordan kroppen din føles nå. Observer eventuelle endringer i din tilstand av avslapning.
+
+[4:15] Ta et litt dypere pust inn... og pust langsomt ut.
+
+[4:25] I ditt eget tempo, begynn å bringe forsiktig bevegelse tilbake til fingrene og tærne dine.
+
+[4:35] Når du er klar, åpne øynene sakte, og ta denne følelsen av ro med deg.
+
+[4:50] Takk for at du tok deg denne tiden for deg selv.`,
+
+                'sleep-10': `[0:00] Velkommen til denne søvnmeditasjonen. Gjør deg komfortabel i sengen, la kroppen bli fullt støttet.
+
+[0:15] Lukk øynene og ta et øyeblikk for å finne ro.
+
+[0:25] Vi begynner med 4-7-8 pusteteknikken, vitenskapelig vist å fremme søvn.
+
+[0:40] Pust stille inn gjennom nesen og tell til fire.
+
+[PAUSE 4]
+
+[0:52] Hold pusten og tell til syv.
+
+[PAUSE 7]
+
+[1:05] Pust fullstendig ut gjennom munnen og tell til åtte.
+
+[PAUSE 8]
+
+[1:25] Igjen, pust inn gjennom nesen.
+
+[PAUSE 4]
+
+[1:35] Hold.
+
+[PAUSE 7]
+
+[1:45] Pust langsomt ut.
+
+[PAUSE 8]
+
+[2:00] En gang til. Pust inn.
+
+[PAUSE 4]
+
+[2:10] Hold.
+
+[PAUSE 7]
+
+[2:20] Og slipp.
+
+[PAUSE 8]
+
+[2:35] La nå pusten returnere til sin naturlige rytme. Legg merke til hvordan kroppen allerede føles mer avslappet, mer klar for søvn.
+
+[3:00] Bring forsiktig bevissthet til føttene dine. Føl dem bli tunge, synke inn i sengen.
+
+[3:25] Bena blir tunge... så tunge... slipp inn i mykheten.
+
+[3:45] Hoftene og nedre rygg mykner... synker ned... smelter inn i hvile.
+
+[4:05] Magen hever og senker seg med hvert lett pust... så fredelig... så rolig.
+
+[4:25] Brystet føles åpent og avslappet... pustingen din langsom og naturlig.
+
+[4:45] Skuldrene synker bort fra ørene... slipper dagens byrder.
+
+[5:05] Armene føles tunge... hendene myke og stille... ingenting å holde på.
+
+[5:30] Nakken er lang og komfortabel... hodet tungt på puten.
+
+[5:45] Kjeven henger løs og myk... tungen hviler i munnen.
+
+[6:05] Øynene er lukket og stille... hviler dypt.
+
+[6:20] Pannen er glatt... hele ansiktet fredelig og rolig.
+
+[6:35] Hele kroppen din er tung... synker ned i dyp hvile.
+
+[PAUSE 15]
+
+[7:00] Forestill deg et mykt, varmt teppe av søvnighet som sakte dekker deg.
+
+[7:15] Denne forsiktige bølgen av døsighet beveger seg opp gjennom bena... så beroligende.
+
+[7:35] Den flyter opp gjennom overkroppen... varme og tyngde sprer seg.
+
+[7:55] Over skuldrene... ned i armene... fingertuppene prikker med ro.
+
+[8:15] Opp gjennom nakken... over ansiktet... pannen din føles tung.
+
+[8:35] Du er helt dekket nå... trygg... varm... sov.
+
+[PAUSE 20]
+
+[9:05] La deg synke helt... dypere... inn i drømmer... god natt.`,
+
+                'focus-10': `[0:00] Velkommen til denne fokusmeditasjonen. Finn en oppreist, komfortabel sittestilling.
+
+[0:15] Lukk øynene eller senk blikket. Ta et dypt pust inn... og ut.
+
+[0:30] Denne praksisen bruker pusteveiledning for å skjerpe oppmerksomheten din.
+
+[0:45] Bring bevisstheten til pusten din. Føl luften som beveger seg inn... og ut... ved nesetippen.
+
+[1:05] Legg merke til den kjølige luften inn... og den varmere luften ut.
+
+[1:20] Hver gang tankene dine vandrer, og det vil de gjøre, forsiktig guide oppmerksomheten tilbake til pusten.
+
+[1:40] Dette er øvelsen: merke når sinnet har vandret, og vennlig bringe det tilbake.
+
+[2:00] Pust inn... og ut. Bare dette pusten, akkurat nå.
+
+[PAUSE 20]
+
+[2:30] Begynn nå å telle pustene dine. Inn... ut... en. Inn... ut... to.
+
+[2:50] Tell opp til fem, og start så på nytt. Hvis du mister tellingen, begynn igjen ved en.
+
+[PAUSE 60]
+
+[4:00] Slipp tellingen. Bare vær med pusten... følg den inn... følg den ut.
+
+[4:20] Legg merke til pausene mellom pust. Stillheten etter innpust... stillheten etter utpust.
+
+[4:45] I disse stillhetene, legg merke til det våkne, klare sinnet.
+
+[PAUSE 30]
+
+[5:25] Utvid nå bevisstheten til å inkludere lyden rundt deg. Hør dem uten å dømme.
+
+[5:45] Utvid til kroppslige fornemmelser. Legg merke uten å reagere.
+
+[6:05] Tankene som kommer... la dem passere som skyer. Observer dem, grip dem ikke.
+
+[PAUSE 20]
+
+[6:35] Du er den stille observatøren. Klar, våken, fokusert.
+
+[7:00] Bring oppmerksomheten tilbake til pusten som ditt anker.
+
+[7:20] Med hvert pust, skjerp fokus. Klar... oppmerksom... til stede.
+
+[PAUSE 40]
+
+[8:10] Legg merke til kvaliteten av oppmerksomheten din nå. Observer mental klarhet.
+
+[8:30] Ta et dypere pust inn... og langsomt ut.
+
+[8:45] I ditt eget tempo, åpne øynene. Bær denne fokuserte bevisstheten med deg.
+
+[9:00] Takk for din praksis.`
+            },
+            'en-US': {
+                'relaxation-5': `[0:00] Welcome to this 5-minute relaxation meditation.
+
+Find a comfortable position, either sitting or lying down. Allow your eyes to gently close.
+
+[0:15] Begin by taking a deep breath in through your nose, feeling your belly expand... and slowly release through your mouth.
+
+[0:30] Take another deep breath in... feeling the cool air enter your nostrils... and exhale fully, releasing any tension.
+
+One more deep breath... and let it go.
+
+[0:50] Now allow your breathing to return to its natural rhythm. Notice the gentle rise and fall of your belly with each breath.
+
+[1:10] Bring your attention to the top of your head. Notice any sensations there without trying to change anything. Simply observe.
+
+[1:25] Let your awareness flow down to your face. Release any tension in your forehead... soften the muscles around your eyes... and relax your jaw.
+
+[1:45] Notice your shoulders. If they're holding any tension, imagine it melting away with your next exhale. Let your shoulders drop and soften.
+
+[2:05] Bring awareness to your chest and belly. Feel the gentle movement of your breath. With each exhale, allow yourself to sink deeper into relaxation.
+
+[PAUSE 10]
+
+[2:25] Notice your arms and hands. Let them feel heavy and relaxed. Release any gripping or holding.
+
+[2:40] Bring attention to your legs. Feel the weight of them. Notice your feet resting. Allow your whole lower body to relax completely.
+
+[3:00] Now expand your awareness to include your entire body. Sense yourself as a whole, breathing naturally, at ease.
+
+[PAUSE 15]
+
+[3:25] As you rest here, silently repeat to yourself: "I am calm... I am relaxed... I am at peace."
+
+[PAUSE 20]
+
+[4:00] Notice how your body feels now. Observe any changes in your state of relaxation.
+
+[4:15] Take a slightly deeper breath in... and exhale slowly.
+
+[4:25] In your own time, begin to bring gentle movement back to your fingers and toes.
+
+[4:35] When you're ready, slowly open your eyes, carrying this sense of calm with you.
+
+[4:50] Thank you for taking this time for yourself.`,
+
+                'sleep-10': `[0:00] Welcome to this sleep meditation. Make yourself comfortable in bed, let your body be fully supported.
+
+[0:15] Close your eyes and take a moment to settle.
+
+[0:25] We'll begin with the 4-7-8 breathing technique, scientifically shown to promote sleep.
+
+[0:40] Breathe in quietly through your nose and count to four.
+
+[PAUSE 4]
+
+[0:52] Hold your breath and count to seven.
+
+[PAUSE 7]
+
+[1:05] Exhale completely through your mouth and count to eight.
+
+[PAUSE 8]
+
+[1:25] Again, breathe in through your nose.
+
+[PAUSE 4]
+
+[1:35] Hold.
+
+[PAUSE 7]
+
+[1:45] Breathe slowly out.
+
+[PAUSE 8]
+
+[2:00] One more time. Breathe in.
+
+[PAUSE 4]
+
+[2:10] Hold.
+
+[PAUSE 7]
+
+[2:20] And release.
+
+[PAUSE 8]
+
+[2:35] Now allow your breath to return to its natural rhythm. Notice how your body already feels more relaxed, more ready for sleep.
+
+[3:00] Gently bring awareness to your feet. Feel them becoming heavy, sinking into the bed.
+
+[3:25] Your legs are becoming heavy... so heavy... releasing into softness.
+
+[3:45] Hips and lower back softening... sinking down... melting into rest.
+
+[4:05] Belly rising and falling with each easy breath... so peaceful... so calm.
+
+[4:25] Chest feeling open and relaxed... your breathing slow and natural.
+
+[4:45] Shoulders dropping away from your ears... releasing the day's burdens.
+
+[5:05] Arms feeling heavy... hands soft and still... nothing to hold onto.
+
+[5:30] Neck is long and comfortable... head heavy on the pillow.
+
+[5:45] Jaw hanging loose and soft... tongue resting in your mouth.
+
+[6:05] Eyes closed and still... resting deeply.
+
+[6:20] Forehead smooth... entire face peaceful and calm.
+
+[6:35] Your whole body is heavy... sinking down into deep rest.
+
+[PAUSE 15]
+
+[7:00] Imagine a soft, warm blanket of sleepiness slowly covering you.
+
+[7:15] This gentle wave of drowsiness moves up through your legs... so soothing.
+
+[7:35] It flows up through your torso... warmth and heaviness spreading.
+
+[7:55] Over your shoulders... down your arms... fingertips tingling with calm.
+
+[8:15] Up through your neck... over your face... forehead feeling heavy.
+
+[8:35] You are completely covered now... safe... warm... sleep.
+
+[PAUSE 20]
+
+[9:05] Let yourself sink completely... deeper... into dreams... good night.`,
+
+                'focus-10': `[0:00] Welcome to this focus meditation. Find an upright, comfortable seated position.
+
+[0:15] Close your eyes or lower your gaze. Take a deep breath in... and out.
+
+[0:30] This practice uses breath awareness to sharpen your attention.
+
+[0:45] Bring awareness to your breath. Feel the air moving in... and out... at the tip of your nose.
+
+[1:05] Notice the cool air in... and the warmer air out.
+
+[1:20] Each time your mind wanders, and it will, gently guide attention back to the breath.
+
+[1:40] This is the practice: noticing when the mind has wandered, and kindly bringing it back.
+
+[2:00] Breathe in... and out. Just this breath, right now.
+
+[PAUSE 20]
+
+[2:30] Now begin counting your breaths. In... out... one. In... out... two.
+
+[2:50] Count up to five, then start again. If you lose count, begin again at one.
+
+[PAUSE 60]
+
+[4:00] Release the counting. Just be with the breath... follow it in... follow it out.
+
+[4:20] Notice the pauses between breaths. The stillness after the in-breath... the stillness after the out-breath.
+
+[4:45] In these stillnesses, notice the alert, clear mind.
+
+[PAUSE 30]
+
+[5:25] Now expand awareness to include sounds around you. Hear them without judging.
+
+[5:45] Expand to bodily sensations. Notice without reacting.
+
+[6:05] Thoughts that arise... let them pass like clouds. Observe them, don't grasp them.
+
+[PAUSE 20]
+
+[6:35] You are the silent observer. Clear, awake, focused.
+
+[7:00] Bring attention back to the breath as your anchor.
+
+[7:20] With each breath, sharpen focus. Clear... attentive... present.
+
+[PAUSE 40]
+
+[8:10] Notice the quality of your attention now. Observe mental clarity.
+
+[8:30] Take a deeper breath in... and slowly out.
+
+[8:45] In your own time, open your eyes. Carry this focused awareness with you.
+
+[9:00] Thank you for your practice.`
+            }
+        };
+
+        // Parse meditation script into timed events
+        function parseScript(scriptText) {
+            const lines = scriptText.split('\n').filter(l => l.trim());
+            const events = [];
+
+            for (let line of lines) {
+                const timeMatch = line.match(/\[(\d+):(\d+)\]/);
+                const pauseMatch = line.match(/\[PAUSE (\d+)\]/);
+
+                if (timeMatch) {
+                    const minutes = parseInt(timeMatch[1]);
+                    const seconds = parseInt(timeMatch[2]);
+                    const totalSeconds = minutes * 60 + seconds;
+                    const text = line.replace(/\[\d+:\d+\]\s*/, '').trim();
+                    if (text) {
+                        events.push({ time: totalSeconds, type: 'speak', text });
+                    }
+                } else if (pauseMatch) {
+                    const pauseSeconds = parseInt(pauseMatch[1]);
+                    if (events.length > 0) {
+                        events[events.length - 1].pauseAfter = pauseSeconds;
+                    }
+                }
+            }
+
+            return events;
+        }
+
+        // Schedule speech events for meditation
+        let scheduledEvents = [];
+        let guidedMeditationEnabled = false;
+
+        function scheduleGuidedMeditation(scriptKey, duration) {
+            clearScheduledEvents();
+            if (!guidedMeditationEnabled) return;
+
+            const script = meditationScripts[currentLang]?.[scriptKey];
+            if (!script) return;
+
+            const events = parseScript(script);
+
+            events.forEach(event => {
+                const timeFromEnd = duration - event.time;
+                if (timeFromEnd >= 0) {
+                    const timeoutId = setTimeout(() => {
+                        speak(event.text, { rate: 0.8, pitch: 0.9 });
+                    }, event.time * 1000);
+                    scheduledEvents.push(timeoutId);
+                }
+            });
+        }
+
+        function clearScheduledEvents() {
+            scheduledEvents.forEach(id => clearTimeout(id));
+            scheduledEvents = [];
+            window.speechSynthesis.cancel();
+        }
+
+        // ───── Audio Engine ─────
+        let audioCtx = null;
+        function getCtx() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            return audioCtx;
+        }
+
+        // Gong: low fundamental + inharmonic overtones with long decay
+        function playGong() {
+            const ctx = getCtx();
+            const t = ctx.currentTime;
+            const partials = [
+                { freq: 120, gain: 0.35, decay: 4.0 },
+                { freq: 190, gain: 0.20, decay: 3.5 },
+                { freq: 280, gain: 0.15, decay: 3.0 },
+                { freq: 420, gain: 0.08, decay: 2.5 },
+                { freq: 560, gain: 0.05, decay: 2.0 },
+            ];
+            partials.forEach(p => {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(p.freq, t);
+                osc.frequency.exponentialRampToValueAtTime(p.freq * 0.98, t + p.decay);
+                gain.gain.setValueAtTime(p.gain, t);
+                gain.gain.exponentialRampToValueAtTime(0.0001, t + p.decay);
+                osc.connect(gain).connect(ctx.destination);
+                osc.start(t);
+                osc.stop(t + p.decay + 0.1);
+            });
+            // Add a noise burst for the initial strike
+            const bufferSize = ctx.sampleRate * 0.08;
+            const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+            const data = noiseBuffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * 0.3;
+            const noise = ctx.createBufferSource();
+            const noiseGain = ctx.createGain();
+            const noiseFilter = ctx.createBiquadFilter();
+            noiseFilter.type = 'lowpass';
+            noiseFilter.frequency.value = 600;
+            noise.buffer = noiseBuffer;
+            noiseGain.gain.setValueAtTime(0.25, t);
+            noiseGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.3);
+            noise.connect(noiseFilter).connect(noiseGain).connect(ctx.destination);
+            noise.start(t);
+        }
+
+        // Continuous noise generators for background sounds
+        let bgNodes = null;
+
+        function createNoise(ctx, type) {
+            // Brown-ish noise base, shaped differently per type
+            const bufferSize = ctx.sampleRate * 2;
+            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+            const d = buffer.getChannelData(0);
+            let last = 0;
+            for (let i = 0; i < bufferSize; i++) {
+                const white = Math.random() * 2 - 1;
+                last = (last + (0.02 * white)) / 1.02;
+                d[i] = last * 3.5;
+            }
+            const source = ctx.createBufferSource();
+            source.buffer = buffer;
+            source.loop = true;
+
+            const gain = ctx.createGain();
+            gain.gain.value = 0.25;
+
+            const filter = ctx.createBiquadFilter();
+
+            if (type === 'rain') {
+                // Rain: mid-band noise with some high-freq sparkle
+                filter.type = 'bandpass';
+                filter.frequency.value = 2000;
+                filter.Q.value = 0.3;
+            } else if (type === 'ocean') {
+                // Ocean: low rumble with slow modulation
+                filter.type = 'lowpass';
+                filter.frequency.value = 500;
+                filter.Q.value = 0.5;
+                // Slow gain modulation for wave effect
+                const lfo = ctx.createOscillator();
+                const lfoGain = ctx.createGain();
+                lfo.type = 'sine';
+                lfo.frequency.value = 0.12;
+                lfoGain.gain.value = 0.12;
+                lfo.connect(lfoGain).connect(gain.gain);
+                lfo.start();
+            } else if (type === 'wind') {
+                filter.type = 'bandpass';
+                filter.frequency.value = 800;
+                filter.Q.value = 0.8;
+                // Slow frequency sweep
+                const lfo = ctx.createOscillator();
+                const lfoGain = ctx.createGain();
+                lfo.type = 'sine';
+                lfo.frequency.value = 0.08;
+                lfoGain.gain.value = 400;
+                lfo.connect(lfoGain).connect(filter.frequency);
+                lfo.start();
+            }
+
+            source.connect(filter).connect(gain).connect(ctx.destination);
+            source.start();
+            return { source, gain };
+        }
+
+        function startBgSound(type) {
+            stopBgSound();
+            const ctx = getCtx();
+            bgNodes = createNoise(ctx, type);
+        }
+
+        function stopBgSound() {
+            if (bgNodes) {
+                bgNodes.gain.gain.setValueAtTime(bgNodes.gain.gain.value, getCtx().currentTime);
+                bgNodes.gain.gain.linearRampToValueAtTime(0, getCtx().currentTime + 0.5);
+                const src = bgNodes.source;
+                setTimeout(() => { try { src.stop(); } catch {} }, 600);
+                bgNodes = null;
+            }
+        }
+
+        // Guided mode ambient soundscapes per theme
+        let guidedNodes = [];
+
+        function startGuidedAudio(theme) {
+            stopGuidedAudio();
+            const ctx = getCtx();
+            if (theme === 'relaxation') {
+                // Warm pad: layered sine tones
+                [174.61, 220, 261.63, 329.63].forEach(freq => {
+                    const osc = ctx.createOscillator();
+                    const g = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.value = freq;
+                    g.gain.value = 0.04;
+                    osc.connect(g).connect(ctx.destination);
+                    osc.start();
+                    guidedNodes.push({ osc, gain: g });
+                });
+                // Layer soft noise
+                const n = createNoise(ctx, 'ocean');
+                n.gain.gain.value = 0.06;
+                guidedNodes.push({ osc: n.source, gain: n.gain });
+            } else if (theme === 'sleep') {
+                // Deep drone + very soft rain
+                [65.41, 98.0, 130.81].forEach(freq => {
+                    const osc = ctx.createOscillator();
+                    const g = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.value = freq;
+                    g.gain.value = 0.05;
+                    osc.connect(g).connect(ctx.destination);
+                    osc.start();
+                    guidedNodes.push({ osc, gain: g });
+                });
+                const n = createNoise(ctx, 'rain');
+                n.gain.gain.value = 0.08;
+                guidedNodes.push({ osc: n.source, gain: n.gain });
+            } else if (theme === 'focus') {
+                // Binaural-inspired: two close frequencies for subtle beating
+                [200, 204].forEach(freq => {
+                    const osc = ctx.createOscillator();
+                    const g = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.value = freq;
+                    g.gain.value = 0.08;
+                    osc.connect(g).connect(ctx.destination);
+                    osc.start();
+                    guidedNodes.push({ osc, gain: g });
+                });
+                // High soft tone
+                const osc = ctx.createOscillator();
+                const g = ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.value = 528;
+                g.gain.value = 0.025;
+                osc.connect(g).connect(ctx.destination);
+                osc.start();
+                guidedNodes.push({ osc, gain: g });
+            }
+        }
+
+        function stopGuidedAudio() {
+            const ctx = getCtx();
+            guidedNodes.forEach(n => {
+                n.gain.gain.setValueAtTime(n.gain.gain.value, ctx.currentTime);
+                n.gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.8);
+                const ref = n.osc;
+                setTimeout(() => { try { ref.stop(); } catch {} }, 900);
+            });
+            guidedNodes = [];
+        }
+
+        // ───── Shared Helpers ─────
+        const CIRCUMFERENCE = 2 * Math.PI * 95;
+
+        function formatTime(s) {
+            const m = Math.floor(s / 60);
+            const sec = s % 60;
+            return `${m}:${sec.toString().padStart(2, '0')}`;
+        }
+
+        function showMsg(el, text) { el.textContent = text; el.classList.add('visible'); }
+        function hideMsg(el) { el.classList.remove('visible'); }
+
+        const themeLabels = { relaxation: 'Relaxation', sleep: 'Sleep', focus: 'Focus' };
+
+        // ───── Mode Switching ─────
+        const modeBtns = document.querySelectorAll('.mode-btn');
+        const panels = document.querySelectorAll('.mode-panel');
+
+        modeBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                modeBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                panels.forEach(p => p.classList.remove('active'));
+                document.getElementById(btn.dataset.mode + '-panel').classList.add('active');
+            });
+        });
+
+        // ───── Voice Controls ─────
+        const voiceToggle = document.getElementById('voice-toggle');
+        const langSelect = document.getElementById('lang-select');
+
+        // Load voices when available
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = () => {
+                window.speechSynthesis.getVoices();
+            };
+        }
+
+        voiceToggle.addEventListener('click', () => {
+            voiceEnabled = !voiceEnabled;
+            voiceToggle.classList.toggle('on', voiceEnabled);
+        });
+
+        langSelect.addEventListener('change', (e) => {
+            currentLang = e.target.value;
+        });
+
+        // ───── Guided Meditation Toggle ─────
+        const guidedMeditationToggle = document.getElementById('guided-meditation-toggle');
+
+        guidedMeditationToggle.addEventListener('click', () => {
+            guidedMeditationEnabled = !guidedMeditationEnabled;
+            guidedMeditationToggle.classList.toggle('on', guidedMeditationEnabled);
+        });
+
+        // Initialize as enabled
+        guidedMeditationEnabled = true;
+
+        // ───── GUIDED MODE ─────
+        const gDisplay = document.getElementById('guided-display');
+        const gProgress = document.querySelector('#guided-ring .progress');
+        const gStartBtn = document.getElementById('guided-startBtn');
+        const gPauseBtn = document.getElementById('guided-pauseBtn');
+        const gResetBtn = document.getElementById('guided-resetBtn');
+        const gMsg = document.getElementById('guided-message');
+        const gNowPlaying = document.getElementById('guided-now-playing');
+        const gDurations = document.querySelectorAll('#guided-durations .pill');
+        const gThemes = document.querySelectorAll('.theme-card');
+
+        gProgress.style.strokeDasharray = CIRCUMFERENCE;
+
+        let gTotal = 5 * 60, gRemaining = gTotal, gInterval = null, gRunning = false;
+        let gTheme = 'relaxation';
+
+        function gUpdate() {
+            gDisplay.textContent = formatTime(gRemaining);
+            gProgress.style.strokeDashoffset = (1 - gRemaining / gTotal) * CIRCUMFERENCE;
+        }
+
+        function gFinish() {
+            clearInterval(gInterval); gInterval = null; gRunning = false;
+            gRemaining = 0; gUpdate();
+            stopGuidedAudio();
+            clearScheduledEvents();
+            playGong();
+            const completeMsg = translate('complete');
+            showMsg(gMsg, completeMsg);
+            speak(completeMsg);
+            gNowPlaying.textContent = '';
+            gStartBtn.disabled = true; gPauseBtn.disabled = true; gResetBtn.disabled = false;
+            gDurations.forEach(b => b.disabled = false);
+            gThemes.forEach(b => b.disabled = false);
+        }
+
+        function gTick() { gRemaining--; gUpdate(); if (gRemaining <= 0) gFinish(); }
+
+        gStartBtn.addEventListener('click', () => {
+            if (gRunning) return;
+            gRunning = true; hideMsg(gMsg);
+
+            // Voice announcement
+            const wasReset = gRemaining === gTotal;
+            if (wasReset) {
+                speak(translate('start') + '. ' + translate(gTheme));
+
+                // Schedule guided meditation script
+                const durationMinutes = Math.floor(gTotal / 60);
+                const scriptKey = getScriptKey(gTheme, durationMinutes);
+                if (scriptKey) {
+                    scheduleGuidedMeditation(scriptKey, gTotal);
+                }
+            } else {
+                speak(translate('resume'));
+            }
+
+            startGuidedAudio(gTheme);
+            gNowPlaying.textContent = `Playing: ${themeLabels[gTheme]} session`;
+            gInterval = setInterval(gTick, 1000);
+            gStartBtn.disabled = true; gPauseBtn.disabled = false; gResetBtn.disabled = false;
+            gDurations.forEach(b => b.disabled = true);
+            gThemes.forEach(b => b.disabled = true);
+        });
+
+        // Helper to get script key based on theme and duration
+        function getScriptKey(theme, minutes) {
+            // Map theme to script type
+            const themeMap = {
+                'relaxation': 'relaxation',
+                'sleep': 'sleep',
+                'focus': 'focus'
+            };
+
+            const scriptType = themeMap[theme] || 'relaxation';
+
+            // Available scripts
+            const available = {
+                'relaxation': [5],
+                'sleep': [10],
+                'focus': [10]
+            };
+
+            // Find closest available duration
+            if (available[scriptType]?.includes(minutes)) {
+                return `${scriptType}-${minutes}`;
+            }
+
+            return null;
+        }
+
+        gPauseBtn.addEventListener('click', () => {
+            if (!gRunning) return;
+            gRunning = false; clearInterval(gInterval); gInterval = null;
+            stopGuidedAudio();
+            clearScheduledEvents();
+            gNowPlaying.textContent = '';
+            gStartBtn.disabled = false; gPauseBtn.disabled = true;
+            const pauseMsg = translate('pause');
+            showMsg(gMsg, pauseMsg);
+            speak(pauseMsg);
+        });
+
+        gResetBtn.addEventListener('click', () => {
+            clearInterval(gInterval); gInterval = null; gRunning = false;
+            stopGuidedAudio();
+            clearScheduledEvents();
+            gRemaining = gTotal; gUpdate(); hideMsg(gMsg);
+            gNowPlaying.textContent = '';
+            gStartBtn.disabled = false; gPauseBtn.disabled = true; gResetBtn.disabled = true;
+            gDurations.forEach(b => b.disabled = false);
+            gThemes.forEach(b => b.disabled = false);
+        });
+
+        gDurations.forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (gRunning) return;
+                gDurations.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                gTotal = parseInt(btn.dataset.minutes) * 60;
+                gRemaining = gTotal; gUpdate(); hideMsg(gMsg);
+                gStartBtn.disabled = false; gPauseBtn.disabled = true; gResetBtn.disabled = true;
+            });
+        });
+
+        gThemes.forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (gRunning) return;
+                gThemes.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                gTheme = btn.dataset.theme;
+            });
+        });
+
+        gUpdate();
+
+        // ───── SELF-GUIDED MODE ─────
+        const sDisplay = document.getElementById('self-display');
+        const sProgress = document.querySelector('#self-ring .progress');
+        const sStartBtn = document.getElementById('self-startBtn');
+        const sPauseBtn = document.getElementById('self-pauseBtn');
+        const sResetBtn = document.getElementById('self-resetBtn');
+        const sMsg = document.getElementById('self-message');
+        const sDurations = document.querySelectorAll('#self-durations .pill');
+        const bgToggle = document.getElementById('bg-sound-toggle');
+        const bgSelect = document.getElementById('bg-sound-select');
+        const bgSoundBtns = document.querySelectorAll('#bg-sound-select .pill');
+
+        sProgress.style.strokeDasharray = CIRCUMFERENCE;
+
+        let sTotal = 5 * 60, sRemaining = sTotal, sInterval = null, sRunning = false;
+        let bgEnabled = false, bgSoundType = 'rain';
+
+        function sUpdate() {
+            sDisplay.textContent = formatTime(sRemaining);
+            sProgress.style.strokeDashoffset = (1 - sRemaining / sTotal) * CIRCUMFERENCE;
+        }
+
+        function sFinish() {
+            clearInterval(sInterval); sInterval = null; sRunning = false;
+            sRemaining = 0; sUpdate();
+            stopBgSound();
+            playGong();
+            const completeMsg = translate('complete');
+            showMsg(sMsg, completeMsg);
+            speak(completeMsg);
+            sStartBtn.disabled = true; sPauseBtn.disabled = true; sResetBtn.disabled = false;
+            sDurations.forEach(b => b.disabled = false);
+        }
+
+        function sTick() { sRemaining--; sUpdate(); if (sRemaining <= 0) sFinish(); }
+
+        sStartBtn.addEventListener('click', () => {
+            if (sRunning) return;
+            sRunning = true; hideMsg(sMsg);
+
+            // Voice announcement
+            const wasReset = sRemaining === sTotal;
+            if (wasReset) {
+                speak(translate('start'));
+            } else {
+                speak(translate('resume'));
+            }
+
+            playGong();
+            if (bgEnabled) startBgSound(bgSoundType);
+            sInterval = setInterval(sTick, 1000);
+            sStartBtn.disabled = true; sPauseBtn.disabled = false; sResetBtn.disabled = false;
+            sDurations.forEach(b => b.disabled = true);
+        });
+
+        sPauseBtn.addEventListener('click', () => {
+            if (!sRunning) return;
+            sRunning = false; clearInterval(sInterval); sInterval = null;
+            stopBgSound();
+            sStartBtn.disabled = false; sPauseBtn.disabled = true;
+            const pauseMsg = translate('pause');
+            showMsg(sMsg, pauseMsg);
+            speak(pauseMsg);
+        });
+
+        sResetBtn.addEventListener('click', () => {
+            clearInterval(sInterval); sInterval = null; sRunning = false;
+            stopBgSound();
+            sRemaining = sTotal; sUpdate(); hideMsg(sMsg);
+            sStartBtn.disabled = false; sPauseBtn.disabled = true; sResetBtn.disabled = true;
+            sDurations.forEach(b => b.disabled = false);
+        });
+
+        sDurations.forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (sRunning) return;
+                sDurations.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                sTotal = parseInt(btn.dataset.minutes) * 60;
+                sRemaining = sTotal; sUpdate(); hideMsg(sMsg);
+                sStartBtn.disabled = false; sPauseBtn.disabled = true; sResetBtn.disabled = true;
+            });
+        });
+
+        bgToggle.addEventListener('click', () => {
+            bgEnabled = !bgEnabled;
+            bgToggle.classList.toggle('on', bgEnabled);
+            bgSelect.classList.toggle('open', bgEnabled);
+        });
+
+        bgSoundBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                bgSoundBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                bgSoundType = btn.dataset.sound;
+            });
+        });
+
+        sUpdate();
+    })();
+    </script>
+</body>
+</html>
