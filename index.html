@@ -354,11 +354,41 @@
             background: #1a2933;
             color: #e0e0e0;
         }
+
+        /* Philosophical Quote */
+        .quote-container {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: rgba(168, 216, 234, 0.05);
+            border-left: 3px solid rgba(168, 216, 234, 0.3);
+            border-radius: 8px;
+        }
+
+        .quote-text {
+            font-size: 0.9rem;
+            font-style: italic;
+            color: #d0e8f0;
+            line-height: 1.6;
+            margin-bottom: 0.5rem;
+        }
+
+        .quote-author {
+            font-size: 0.75rem;
+            color: #8ab0c0;
+            font-weight: 400;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Meditation</h1>
+
+        <!-- Philosophical Quote -->
+        <div class="quote-container">
+            <div class="quote-text" id="quote-text">Loading wisdom...</div>
+            <div class="quote-author" id="quote-author"></div>
+        </div>
 
         <!-- Mode Selector -->
         <div class="mode-selector">
@@ -490,6 +520,46 @@
 
     <script>
     (() => {
+        // ───── Philosophical Quotes ─────
+        let philosophicalQuotes = [];
+
+        // Load quotes from JSON file
+        async function loadQuotes() {
+            try {
+                const response = await fetch('philosophical-quotes.json');
+                const data = await response.json();
+                philosophicalQuotes = data.quotes;
+                displayRandomQuote();
+            } catch (error) {
+                console.error('Failed to load quotes:', error);
+                // Fallback quotes if JSON fails to load
+                philosophicalQuotes = [
+                    { text: "The unexamined life is not worth living.", author: "Socrates", era: "Ancient Greek" },
+                    { text: "Be present in all things and thankful for all things.", author: "Maya Angelou", era: "Modern" },
+                    { text: "The journey of a thousand miles begins with one step.", author: "Lao Tzu", era: "Ancient Eastern" }
+                ];
+                displayRandomQuote();
+            }
+        }
+
+        function displayRandomQuote() {
+            if (philosophicalQuotes.length === 0) return;
+
+            const randomIndex = Math.floor(Math.random() * philosophicalQuotes.length);
+            const quote = philosophicalQuotes[randomIndex];
+
+            const quoteText = document.getElementById('quote-text');
+            const quoteAuthor = document.getElementById('quote-author');
+
+            if (quoteText && quoteAuthor) {
+                quoteText.textContent = `"${quote.text}"`;
+                quoteAuthor.textContent = `— ${quote.author}${quote.era ? ` (${quote.era})` : ''}`;
+            }
+        }
+
+        // Load quotes when page loads
+        loadQuotes();
+
         // ───── Speech Synthesis Engine ─────
         let voiceEnabled = true;
         let currentLang = 'nb-NO';

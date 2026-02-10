@@ -1,0 +1,604 @@
+{
+  "quotes": [
+    {
+      "text": "The unexamined life is not worth living.",
+      "author": "Socrates",
+      "era": "Ancient Greek",
+      "theme": "Self-Knowledge"
+    },
+    {
+      "text": "One thing only I know, and that is that I know nothing.",
+      "author": "Socrates",
+      "era": "Ancient Greek",
+      "theme": "Wisdom & Knowledge"
+    },
+    {
+      "text": "Beware the barrenness of a busy life.",
+      "author": "Socrates",
+      "era": "Ancient Greek",
+      "theme": "Inner Peace & Mindfulness"
+    },
+    {
+      "text": "Wise men speak because they have something to say; fools because they have to say something.",
+      "author": "Plato",
+      "era": "Ancient Greek",
+      "theme": "Wisdom & Knowledge"
+    },
+    {
+      "text": "The greatest wealth is to live content with little.",
+      "author": "Plato",
+      "era": "Ancient Greek",
+      "theme": "Happiness & Fulfillment"
+    },
+    {
+      "text": "Courage is knowing what not to fear.",
+      "author": "Plato",
+      "era": "Ancient Greek",
+      "theme": "Wisdom & Knowledge"
+    },
+    {
+      "text": "Ignorance is the root and stem of all evil.",
+      "author": "Plato",
+      "era": "Ancient Greek",
+      "theme": "Truth & Reality"
+    },
+    {
+      "text": "Knowing yourself is the beginning of all wisdom.",
+      "author": "Aristotle",
+      "era": "Ancient Greek",
+      "theme": "Self-Knowledge"
+    },
+    {
+      "text": "Educating the mind without educating the heart is no education at all.",
+      "author": "Aristotle",
+      "era": "Ancient Greek",
+      "theme": "Wisdom & Knowledge"
+    },
+    {
+      "text": "Happiness lies in virtuous activity, and perfect happiness lies in the best activity, which is contemplative.",
+      "author": "Aristotle",
+      "era": "Ancient Greek",
+      "theme": "Happiness & Fulfillment"
+    },
+    {
+      "text": "No man ever steps in the same river twice, for it's not the same river and he's not the same man.",
+      "author": "Heraclitus",
+      "era": "Ancient Greek",
+      "theme": "Life & Existence"
+    },
+    {
+      "text": "You have power over your mind - not outside events. Realize this, and you will find strength.",
+      "author": "Marcus Aurelius",
+      "era": "Roman Stoic",
+      "theme": "Inner Peace & Mindfulness"
+    },
+    {
+      "text": "Waste no more time arguing what a good man should be. Be one.",
+      "author": "Marcus Aurelius",
+      "era": "Roman Stoic",
+      "theme": "Life & Existence"
+    },
+    {
+      "text": "The best revenge is to be unlike him who performed the injury.",
+      "author": "Marcus Aurelius",
+      "era": "Roman Stoic",
+      "theme": "Inner Peace & Mindfulness"
+    },
+    {
+      "text": "We suffer more often in imagination than in reality.",
+      "author": "Seneca",
+      "era": "Roman Stoic",
+      "theme": "Inner Peace & Mindfulness"
+    },
+    {
+      "text": "True happiness is to enjoy the present, without anxious dependence upon the future.",
+      "author": "Seneca",
+      "era": "Roman Stoic",
+      "theme": "Happiness & Fulfillment"
+    },
+    {
+      "text": "People are frugal in guarding their personal property; but as soon as it comes to squandering time they are most wasteful.",
+      "author": "Seneca",
+      "era": "Roman Stoic",
+      "theme": "Wisdom & Knowledge"
+    },
+    {
+      "text": "It's not what happens to you, but how you react to it that matters.",
+      "author": "Epictetus",
+      "era": "Roman Stoic",
+      "theme": "Inner Peace & Mindfulness"
+    },
+    {
+      "text": "How long are you going to wait before you demand the best for yourself?",
+      "author": "Epictetus",
+      "era": "Roman Stoic",
+      "theme": "Self-Knowledge"
+    },
+    {
+      "text": "Don't seek for everything to happen as you wish it would, but rather wish that everything happens as it actually will—then your life will flow well.",
+      "author": "Epictetus",
+      "era": "Roman Stoic",
+      "theme": "Inner Peace & Mindfulness"
+    },
+    {
+      "text": "I think, therefore I am.",
+      "author": "René Descartes",
+      "era": "Enlightenment",
+      "theme": "Self-Knowledge"
+    },
+    {
+      "text": "If you would be a real seeker after truth, it is necessary that at least once in your life you doubt, as far as possible, all things.",
+      "author": "René Descartes",
+      "era": "Enlightenment",
+      "theme": "Truth & Reality"
+    },
+    {
+      "text": "Two things fill the mind with ever new and increasing admiration and awe: the starry heavens above me and the moral law within me.",
+      "author": "Immanuel Kant",
+      "era": "Enlightenment",
+      "theme": "Wisdom & Knowledge"
+    },
+    {
+      "text": "Do not weep; do not wax indignant. Understand.",
+      "author": "Baruch Spinoza",
+      "era": "Enlightenment",
+      "theme": "Wisdom & Knowledge"
+    },
+    {
+      "text": "That which does not kill us makes us stronger.",
+      "author": "Friedrich Nietzsche",
+      "era": "Modern",
+      "theme": "Life & Existence"
+    },
+    {
+      "text": "He who has a why to live can bear almost any how.",
+      "author": "Friedrich Nietzsche",
+      "era": "Modern",
+      "theme": "Life & Existence"
+    },
+    {
+      "text": "To live is to suffer, to survive is to find some meaning in the suffering.",
+      "author": "Friedrich Nietzsche",
+      "era": "Modern",
+      "theme": "Life & Existence"
+    },
+    {
+      "text": "Without music, life would be a mistake.",
+      "author": "Friedrich Nietzsche",
+      "era": "Modern",
+      "theme": "Happiness & Fulfillment"
+    },
+    {
+      "text": "Life can only be understood backwards; but it must be lived forwards.",
+      "author": "Søren Kierkegaard",
+      "era": "Modern",
+      "theme": "Life & Existence"
+    },
+    {
+      "text": "Those who can make you believe absurdities can make you commit atrocities.",
+      "author": "Voltaire",
+      "era": "Enlightenment",
+      "theme": "Truth & Reality"
+    },
+    {
+      "text": "No one saves us but ourselves. No one can and no one may. We ourselves must walk the path.",
+      "author": "Buddha",
+      "era": "Ancient Eastern",
+      "theme": "Self-Knowledge"
+    },
+    {
+      "text": "Do not dwell in the past, do not dream of the future, concentrate the mind on the present moment.",
+      "author": "Buddha",
+      "era": "Ancient Eastern",
+      "theme": "Inner Peace & Mindfulness"
+    },
+    {
+      "text": "It is better to conquer yourself than to win a thousand battles. Then the victory is yours. It cannot be taken from you.",
+      "author": "Buddha",
+      "era": "Ancient Eastern",
+      "theme": "Self-Knowledge"
+    },
+    {
+      "text": "Meditation brings wisdom; lack of meditation leaves ignorance.",
+      "author": "Buddha",
+      "era": "Ancient Eastern",
+      "theme": "Wisdom & Knowledge"
+    },
+    {
+      "text": "The present moment is filled with joy and happiness. If you are attentive, you will see it.",
+      "author": "Thich Nhat Hanh",
+      "era": "Contemporary",
+      "theme": "Inner Peace & Mindfulness"
+    },
+    {
+      "text": "Walk as if you are kissing the Earth with your feet.",
+      "author": "Thich Nhat Hanh",
+      "era": "Contemporary",
+      "theme": "Inner Peace & Mindfulness"
+    },
+    {
+      "text": "Feelings come and go like clouds in a windy sky. Conscious breathing is my anchor.",
+      "author": "Thich Nhat Hanh",
+      "era": "Contemporary",
+      "theme": "Inner Peace & Mindfulness"
+    },
+    {
+      "text": "If you miss the present moment, you miss your appointment with life. That is very serious!",
+      "author": "Thich Nhat Hanh",
+      "era": "Contemporary",
+      "theme": "Inner Peace & Mindfulness"
+    },
+    {
+      "text": "Breathing in, I calm body and mind. Breathing out, I smile. Dwelling in the present moment I know this is the only moment.",
+      "author": "Thich Nhat Hanh",
+      "era": "Contemporary",
+      "theme": "Inner Peace & Mindfulness"
+    },
+    {
+      "text": "He who knows others is wise; he who knows himself is enlightened.",
+      "author": "Lao Tzu",
+      "era": "Ancient Eastern",
+      "theme": "Self-Knowledge"
+    },
+    {
+      "text": "A journey of a thousand miles begins with a single step.",
+      "author": "Lao Tzu",
+      "era": "Ancient Eastern",
+      "theme": "Life & Existence"
+    },
+    {
+      "text": "Respond intelligently even to unintelligent treatment.",
+      "author": "Lao Tzu",
+      "era": "Ancient Eastern",
+      "theme": "Wisdom & Knowledge"
+    },
+    {
+      "text": "If I am walking with two other men, each of them will serve as my teacher. I will pick out the good points of the one and imitate them, and the bad points of the other and correct them in myself.",
+      "author": "Confucius",
+      "era": "Ancient Eastern",
+      "theme": "Wisdom & Knowledge"
+    },
+    {
+      "text": "A superior man is modest in his speech, but exceeds in his actions.",
+      "author": "Confucius",
+      "era": "Ancient Eastern",
+      "theme": "Wisdom & Knowledge"
+    },
+    {
+      "text": "Yesterday I was clever, so I wanted to change the world. Today I am wise, so I am changing myself.",
+      "author": "Rumi",
+      "era": "Medieval",
+      "theme": "Self-Knowledge"
+    },
+    {
+      "text": "Love is the bridge between you and everything.",
+      "author": "Rumi",
+      "era": "Medieval",
+      "theme": "Happiness & Fulfillment"
+    },
+    {
+      "text": "Out beyond ideas of wrongdoing and rightdoing there is a field. I'll meet you there.",
+      "author": "Rumi",
+      "era": "Medieval",
+      "theme": "Inner Peace & Mindfulness"
+    },
+    {
+      "text": "Do not feel lonely, the entire universe is inside you.",
+      "author": "Rumi",
+      "era": "Medieval",
+      "theme": "Self-Knowledge"
+    },
+    {
+      "text": "When walking, walk. When eating, eat.",
+      "author": "Zen Proverb",
+      "era": "Traditional",
+      "theme": "Inner Peace & Mindfulness"
+    },
+    {
+      "text": "Our own brain, our own heart is our temple; the philosophy is kindness.",
+      "author": "Dalai Lama",
+      "era": "Contemporary",
+      "theme": "Wisdom & Knowledge"
+    },
+    {
+      "text": "Compassion is not complete if it does not include oneself.",
+      "author": "Allan Lokos",
+      "era": "Contemporary",
+      "theme": "Self-Knowledge"
+    },
+    {
+      "text": "Philosophy is a battle against the bewitchment of our intelligence by means of language.",
+      "author": "Ludwig Wittgenstein",
+      "era": "Modern",
+      "theme": "Truth & Reality"
+    },
+    {
+      "text": "The best way to capture moments is to pay attention. This is how we cultivate mindfulness.",
+      "author": "Jon Kabat-Zinn",
+      "era": "Contemporary",
+      "theme": "Inner Peace & Mindfulness"
+    },
+    {
+      "text": "Nature has given us two ears, two eyes, and but one tongue—to the end that we should hear and see more than we speak.",
+      "author": "Socrates",
+      "era": "Ancient Greek",
+      "theme": "Wisdom & Knowledge"
+    },
+    {
+      "text": "Necessity is the mother of invention.",
+      "author": "Plato",
+      "era": "Ancient Greek",
+      "theme": "Wisdom & Knowledge"
+    },
+    {
+      "text": "The only true wisdom is in knowing you know nothing.",
+      "author": "Socrates",
+      "era": "Ancient Greek",
+      "theme": "Wisdom & Knowledge"
+    },
+    {
+      "text": "Man is condemned to be free; because once thrown into the world, he is responsible for everything he does.",
+      "author": "Jean-Paul Sartre",
+      "era": "Modern",
+      "theme": "Life & Existence"
+    },
+    {
+      "text": "Existence precedes essence.",
+      "author": "Jean-Paul Sartre",
+      "era": "Modern",
+      "theme": "Life & Existence"
+    },
+    {
+      "text": "In the depth of winter, I finally learned that within me there lay an invincible summer.",
+      "author": "Albert Camus",
+      "era": "Modern",
+      "theme": "Inner Peace & Mindfulness"
+    },
+    {
+      "text": "The only way to deal with an unfree world is to become so absolutely free that your very existence is an act of rebellion.",
+      "author": "Albert Camus",
+      "era": "Modern",
+      "theme": "Life & Existence"
+    },
+    {
+      "text": "To be yourself in a world that is constantly trying to make you something else is the greatest accomplishment.",
+      "author": "Ralph Waldo Emerson",
+      "era": "Modern",
+      "theme": "Self-Knowledge"
+    },
+    {
+      "text": "The mind is everything. What you think you become.",
+      "author": "Buddha",
+      "era": "Ancient Eastern",
+      "theme": "Wisdom & Knowledge"
+    },
+    {
+      "text": "Peace comes from within. Do not seek it without.",
+      "author": "Buddha",
+      "era": "Ancient Eastern",
+      "theme": "Inner Peace & Mindfulness"
+    },
+    {
+      "text": "Three things cannot be long hidden: the sun, the moon, and the truth.",
+      "author": "Buddha",
+      "era": "Ancient Eastern",
+      "theme": "Truth & Reality"
+    },
+    {
+      "text": "Happiness is not something ready made. It comes from your own actions.",
+      "author": "Dalai Lama",
+      "era": "Contemporary",
+      "theme": "Happiness & Fulfillment"
+    },
+    {
+      "text": "The way is not in the sky. The way is in the heart.",
+      "author": "Buddha",
+      "era": "Ancient Eastern",
+      "theme": "Self-Knowledge"
+    },
+    {
+      "text": "He who knows, does not speak. He who speaks, does not know.",
+      "author": "Lao Tzu",
+      "era": "Ancient Eastern",
+      "theme": "Wisdom & Knowledge"
+    },
+    {
+      "text": "When I let go of what I am, I become what I might be.",
+      "author": "Lao Tzu",
+      "era": "Ancient Eastern",
+      "theme": "Self-Knowledge"
+    },
+    {
+      "text": "Nature does not hurry, yet everything is accomplished.",
+      "author": "Lao Tzu",
+      "era": "Ancient Eastern",
+      "theme": "Inner Peace & Mindfulness"
+    },
+    {
+      "text": "To the mind that is still, the whole universe surrenders.",
+      "author": "Lao Tzu",
+      "era": "Ancient Eastern",
+      "theme": "Inner Peace & Mindfulness"
+    },
+    {
+      "text": "The journey of a thousand miles begins beneath one's feet.",
+      "author": "Lao Tzu",
+      "era": "Ancient Eastern",
+      "theme": "Life & Existence"
+    },
+    {
+      "text": "It does not matter how slowly you go as long as you do not stop.",
+      "author": "Confucius",
+      "era": "Ancient Eastern",
+      "theme": "Life & Existence"
+    },
+    {
+      "text": "Real knowledge is to know the extent of one's ignorance.",
+      "author": "Confucius",
+      "era": "Ancient Eastern",
+      "theme": "Wisdom & Knowledge"
+    },
+    {
+      "text": "Wherever you go, go with all your heart.",
+      "author": "Confucius",
+      "era": "Ancient Eastern",
+      "theme": "Life & Existence"
+    },
+    {
+      "text": "The wound is the place where the Light enters you.",
+      "author": "Rumi",
+      "era": "Medieval",
+      "theme": "Life & Existence"
+    },
+    {
+      "text": "What you seek is seeking you.",
+      "author": "Rumi",
+      "era": "Medieval",
+      "theme": "Self-Knowledge"
+    },
+    {
+      "text": "The quieter you become, the more you can hear.",
+      "author": "Rumi",
+      "era": "Medieval",
+      "theme": "Inner Peace & Mindfulness"
+    },
+    {
+      "text": "Let yourself be silently drawn by the strange pull of what you really love. It will not lead you astray.",
+      "author": "Rumi",
+      "era": "Medieval",
+      "theme": "Life & Existence"
+    },
+    {
+      "text": "The privilege of a lifetime is to become who you truly are.",
+      "author": "Carl Jung",
+      "era": "Modern",
+      "theme": "Self-Knowledge"
+    },
+    {
+      "text": "Everything that irritates us about others can lead us to an understanding of ourselves.",
+      "author": "Carl Jung",
+      "era": "Modern",
+      "theme": "Self-Knowledge"
+    },
+    {
+      "text": "Who looks outside, dreams; who looks inside, awakes.",
+      "author": "Carl Jung",
+      "era": "Modern",
+      "theme": "Self-Knowledge"
+    },
+    {
+      "text": "We cannot change anything until we accept it.",
+      "author": "Carl Jung",
+      "era": "Modern",
+      "theme": "Inner Peace & Mindfulness"
+    },
+    {
+      "text": "The cave you fear to enter holds the treasure you seek.",
+      "author": "Joseph Campbell",
+      "era": "Contemporary",
+      "theme": "Life & Existence"
+    },
+    {
+      "text": "We must be willing to let go of the life we planned so as to have the life that is waiting for us.",
+      "author": "Joseph Campbell",
+      "era": "Contemporary",
+      "theme": "Life & Existence"
+    },
+    {
+      "text": "Between stimulus and response there is a space. In that space is our power to choose our response.",
+      "author": "Viktor Frankl",
+      "era": "Modern",
+      "theme": "Inner Peace & Mindfulness"
+    },
+    {
+      "text": "When we are no longer able to change a situation, we are challenged to change ourselves.",
+      "author": "Viktor Frankl",
+      "era": "Modern",
+      "theme": "Self-Knowledge"
+    },
+    {
+      "text": "Everything can be taken from a man but one thing: the last of the human freedoms—to choose one's attitude in any given set of circumstances.",
+      "author": "Viktor Frankl",
+      "era": "Modern",
+      "theme": "Life & Existence"
+    },
+    {
+      "text": "An eye for an eye will only make the whole world blind.",
+      "author": "Mahatma Gandhi",
+      "era": "Modern",
+      "theme": "Wisdom & Knowledge"
+    },
+    {
+      "text": "Be the change that you wish to see in the world.",
+      "author": "Mahatma Gandhi",
+      "era": "Modern",
+      "theme": "Life & Existence"
+    },
+    {
+      "text": "Happiness is when what you think, what you say, and what you do are in harmony.",
+      "author": "Mahatma Gandhi",
+      "era": "Modern",
+      "theme": "Happiness & Fulfillment"
+    },
+    {
+      "text": "The weak can never forgive. Forgiveness is the attribute of the strong.",
+      "author": "Mahatma Gandhi",
+      "era": "Modern",
+      "theme": "Wisdom & Knowledge"
+    },
+    {
+      "text": "In dwelling, live close to the ground. In thinking, keep to the simple.",
+      "author": "Lao Tzu",
+      "era": "Ancient Eastern",
+      "theme": "Inner Peace & Mindfulness"
+    },
+    {
+      "text": "The obstacle is the way.",
+      "author": "Marcus Aurelius",
+      "era": "Roman Stoic",
+      "theme": "Life & Existence"
+    },
+    {
+      "text": "If it is not right, do not do it. If it is not true, do not say it.",
+      "author": "Marcus Aurelius",
+      "era": "Roman Stoic",
+      "theme": "Truth & Reality"
+    },
+    {
+      "text": "Very little is needed to make a happy life; it is all within yourself, in your way of thinking.",
+      "author": "Marcus Aurelius",
+      "era": "Roman Stoic",
+      "theme": "Happiness & Fulfillment"
+    },
+    {
+      "text": "Wherever a man can live, there he can also live well.",
+      "author": "Marcus Aurelius",
+      "era": "Roman Stoic",
+      "theme": "Life & Existence"
+    },
+    {
+      "text": "Begin at once to live, and count each separate day as a separate life.",
+      "author": "Seneca",
+      "era": "Roman Stoic",
+      "theme": "Life & Existence"
+    },
+    {
+      "text": "Luck is what happens when preparation meets opportunity.",
+      "author": "Seneca",
+      "era": "Roman Stoic",
+      "theme": "Wisdom & Knowledge"
+    },
+    {
+      "text": "Difficulties strengthen the mind, as labor does the body.",
+      "author": "Seneca",
+      "era": "Roman Stoic",
+      "theme": "Life & Existence"
+    },
+    {
+      "text": "The only thing I know is that I do not know anything.",
+      "author": "Socrates",
+      "era": "Ancient Greek",
+      "theme": "Wisdom & Knowledge"
+    }
+  ]
+}
