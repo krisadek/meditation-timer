@@ -407,8 +407,8 @@
             <div class="voice-control-group">
                 <span class="voice-label">Language</span>
                 <select class="lang-select" id="lang-select">
+                    <option value="en-US" selected>English</option>
                     <option value="nb-NO">Norsk</option>
-                    <option value="en-US">English</option>
                 </select>
             </div>
         </div>
@@ -562,7 +562,7 @@
 
         // ───── Speech Synthesis Engine ─────
         let voiceEnabled = true;
-        let currentLang = 'nb-NO';
+        let currentLang = 'en-US';
 
         const translations = {
             'nb-NO': {
