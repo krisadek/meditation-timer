@@ -1,149 +1,162 @@
-# Meditation Timer Project
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Default Language
 **English (en-US)** - Use English as the default language for all user-facing content, code comments, and documentation unless explicitly requested otherwise by the user.
 
 ## Project Overview
-An interactive meditation timer web application with guided meditation features, voice synthesis, and bilingual support.
+Single-page meditation timer application (`index.html`) with guided meditation, voice synthesis, and ambient soundscapes. No build process, no dependencies.
 
-## Key Features
-- **Guided Mode**: Three meditation themes (Relaxation, Sleep, Focus) with ambient soundscapes
-- **Self-Guided Mode**: Customizable timer with optional background sounds
-- **Voice Guidance**: Web Speech API integration for spoken meditation instructions
-- **Bilingual Support**: English and Norwegian (Norsk) languages
-- **Evidence-Based Scripts**: 20 professional meditation scripts based on scientific research
-- **No Dependencies**: Pure HTML/CSS/JavaScript - no build process required
+## Architecture
 
-## Project Structure
+### Core Structure
+The app is a **single self-contained HTML file** with three main systems:
+
+1. **Audio Engine** (Web Audio API) - Lines ~500-700
+   - `playGong()` - Synthesized gong with inharmonic overtones
+   - `createNoise()` - Procedural noise generation (rain/ocean/wind)
+   - `startGuidedAudio()` - Theme-specific ambient soundscapes
+   - `stopGuidedAudio()` - Fade out and cleanup
+
+2. **Speech Synthesis** (Web Speech API) - Lines ~566-630
+   - **Queue-based system** to prevent overlapping speech
+   - `speakNow()` - Core speech function (synchronous, no cancel)
+   - `queueSpeech()` - Adds to queue
+   - `processQueue()` - Processes queue one utterance at a time
+   - `stopAllSpeech()` - Clears queue and cancels speech
+   - **CRITICAL**: Never call `speechSynthesis.cancel()` in `speakNow()` - it causes "canceled" errors
+
+3. **Meditation Script Scheduler** - Lines ~1125-1170
+   - `parseScript()` - Parses `[MM:SS]` timestamps and `[PAUSE X]` markers
+   - `scheduleGuidedMeditation()` - Creates setTimeout events for timed speech
+   - `meditationScripts` object - Embedded scripts for nb-NO and en-US
+   - Currently embedded: relaxation-5, relaxation-10, sleep-10, focus-10
+
+### Data Flow (Guided Meditation)
 ```
-.
-├── index.html                 # Main meditation timer application
-├── guessing_game.py          # Simple Python number guessing game
-├── meditation-scripts/       # Meditation scripts directory
-│   ├── README.txt           # Documentation on techniques and research
-│   ├── en/                  # English meditation scripts
-│   │   ├── relaxation-*.txt
-│   │   ├── sleep-*.txt
-│   │   ├── focus-*.txt
-│   │   └── mindfulness-*.txt
-│   └── no/                  # Norwegian meditation scripts
-│       └── (same structure as en/)
-└── CLAUDE.md                # This file
+User clicks Start
+  → gStartBtn handler checks if wasReset
+  → Calls scheduleGuidedMeditation(scriptKey, duration)
+    → parseScript() extracts timing events from script text
+    → Creates setTimeout() for each event
+    → Each timeout calls speak(text)
+      → queueSpeech() adds to queue
+      → processQueue() speaks one at a time
 ```
 
-## Technical Stack
-- **Frontend**: Vanilla JavaScript, HTML5, CSS3
-- **Audio**: Web Audio API (for sound generation)
-- **Speech**: Web Speech API (for text-to-speech)
-- **Deployment**: Vercel
-- **Version Control**: GitHub
+### Key State Variables
+- `guidedMeditationEnabled` - Master toggle for voice guidance (default: true)
+- `voiceEnabled` - Global voice on/off (controlled by top toggle)
+- `currentLang` - 'en-US' or 'nb-NO' (default: 'en-US')
+- `speechQueue` - Array of pending speech utterances
+- `isSpeaking` - Boolean flag to prevent overlap
+- `scheduledEvents` - Array of setTimeout IDs for meditation scripts
 
-## Audio Implementation
-### Web Audio API
-- **Gong sound**: Synthesized using oscillators with inharmonic overtones
-- **Ambient soundscapes**: Theme-specific (relaxation, sleep, focus) using layered sine waves
-- **Background sounds**: Procedurally generated noise (rain, ocean, wind)
+## Development
 
-### Web Speech API
-- **Voice settings**: Slower rate (0.85), lower pitch (0.9) for calming effect
-- **Language support**: Automatic voice selection based on current language
-- **Script integration**: Timed speech events synchronized with meditation timer
-
-## Meditation Scripts
-All scripts are evidence-based and include:
-- Precise timing markers `[MM:SS]`
-- Pause indicators `[PAUSE X]`
-- Body scan techniques
-- Breathing exercises (e.g., 4-7-8 technique)
-- Progressive muscle relaxation
-- Guided imagery
-- Mindfulness practices
-
-Scientific techniques referenced:
-- Body scan meditation (reduces cortisol)
-- Diaphragmatic breathing (activates parasympathetic nervous system)
-- Progressive muscle relaxation (reduces anxiety and depression)
-- Guided imagery (improves sleep quality)
-
-## Development Guidelines
-
-### Code Style
-- Use clear, descriptive variable names
-- Add comments for complex logic
-- Keep functions focused and single-purpose
-- Prefer vanilla JavaScript over libraries
-- Use ES6+ features where appropriate
-
-### Adding New Features
-When adding features to index.html:
-1. Maintain the existing code structure
-2. Keep the self-contained nature (no external dependencies)
-3. Test across browsers (especially Safari for audio)
-4. Ensure mobile responsiveness
-5. Update this CLAUDE.md file if architecture changes
-
-### Adding Meditation Scripts
-To add new meditation scripts:
-1. Follow the existing format with timing markers
-2. Include evidence-based techniques
-3. Add both English and Norwegian versions
-4. Update the `meditationScripts` object in index.html
-5. Update the `getScriptKey()` function to map themes/durations
-
-## Deployment
-- **Platform**: Vercel
-- **Production URL**: https://meditation-timer-one.vercel.app
-- **GitHub**: https://github.com/krisadek/meditation-timer
-
-### Deploy Commands
+### Testing Locally
 ```bash
-# Deploy to production
-vercel --prod
+# Open in browser
+open index.html
 
-# Preview deployment
-vercel
+# Or use local server if needed
+python3 -m http.server 8000
 ```
 
-## Git Workflow
+### Deployment
+Automatic via Vercel + GitHub integration:
 ```bash
-# Make changes
 git add .
-git commit -m "Description of changes"
+git commit -m "Description"
 git push origin main
+# Vercel deploys automatically
+```
 
-# Deploy to Vercel
+Manual deploy:
+```bash
 vercel --prod
 ```
 
-## Future Enhancements (Ideas)
-- [ ] Add 15-min and 20-min guided meditation scripts to JavaScript
-- [ ] Add visual meditation guide (breathing circle animation)
-- [ ] Add session history/tracking
-- [ ] Add customizable meditation themes
-- [ ] Add meditation journal feature
-- [ ] Add progressive meditation course/program
-- [ ] Add background music options
-- [ ] Mobile app version (PWA)
+### Adding Guided Meditation Scripts
 
-## Browser Compatibility
-- **Chrome/Edge**: Full support
-- **Firefox**: Full support
-- **Safari**: Full support (note: autoplay restrictions apply)
-- **Mobile**: Responsive design, touch-friendly
+**In `meditation-scripts/` folder** (for reference):
+- Text files with `[MM:SS]` markers and `[PAUSE X]` indicators
+- Not loaded by app, just documentation
 
-## Voice Availability by Browser
-- **Chrome**: Good Norwegian and English voices
-- **Safari**: Excellent (Samantha for English, Nora for Norwegian)
-- **Firefox**: Limited voice selection
-- **Edge**: Good Microsoft Neural voices
+**In `index.html`** (actually used by app):
+1. Find `meditationScripts` object (~line 664)
+2. Add script for both `'nb-NO'` and `'en-US'`
+3. Update `available` object in `getScriptKey()` function (~line 1502)
+4. Script key format: `'theme-duration'` (e.g., `'relaxation-10'`)
 
-## Important Notes
-- Web Speech API requires user interaction to start (browsers block autoplay)
-- First speech synthesis may take 1-2 seconds to load voices
-- Offline functionality: App works offline after first load (except voice synthesis may be limited)
+Example:
+```javascript
+const meditationScripts = {
+    'en-US': {
+        'relaxation-15': `[0:00] Welcome...
+[0:30] First instruction...
+[PAUSE 10]
+[1:00] Next instruction...`
+    }
+};
 
-## License
-Not specified - Add license information if needed
+// Then update getScriptKey:
+const available = {
+    'relaxation': [5, 10, 15],  // Added 15
+    'sleep': [10],
+    'focus': [10]
+};
+```
 
-## Contributing
-This is a personal project. If you want to contribute or fork, please contact the repository owner.
+### Speech Synthesis Debugging
+
+**Common Issues:**
+- "Speech error: canceled" → Something is calling `cancel()` inappropriately
+- No sound but `speak()` called → Check browser autoplay settings or site permissions
+- Queue not processing → Check `isSpeaking` flag and `onend` handler
+
+**Debug in Console:**
+```javascript
+// Check queue state
+speechQueue
+isSpeaking
+
+// Manual test
+queueSpeech("Test message")
+
+// Check voices
+window.speechSynthesis.getVoices()
+```
+
+### Adding Philosophical Quotes
+Quotes are loaded from `philosophical-quotes.json` on page load. To add/modify:
+1. Edit `philosophical-quotes.json`
+2. Follow existing format: `{ "text": "...", "author": "...", "era": "..." }`
+3. New quote displays on page refresh (random selection)
+
+## Browser Compatibility Notes
+
+### Chrome
+- **Autoplay**: Strict - requires user gesture
+- **Voices**: ~200 available, good quality
+- **Issue**: May block `speechSynthesis.speak()` if called from `setTimeout` without prior user interaction
+
+### Safari
+- **Voices**: Best quality (Samantha, Nora)
+- **Issue**: May require explicit autoplay permission
+
+### Firefox
+- **Voices**: Limited selection
+- **Audio**: Full Web Audio API support
+
+## Critical Implementation Details
+
+### Why Queue System for Speech
+Browsers cancel pending utterances if `speak()` is called while another is playing. Queue ensures sequential playback.
+
+### Why No `cancel()` in `speak()`
+Calling `cancel()` before `speak()` in a scheduled context causes immediate cancellation. Only call `cancel()` when actually stopping meditation (pause/reset).
+
+### Meditation Script Timing
+Scripts use `setTimeout(callback, event.time * 1000)` where `event.time` is seconds from start. NOT relative delays between events.
