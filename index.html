@@ -563,33 +563,67 @@
         // Load quotes when page loads
         loadQuotes();
 
-        // ───── Speech Synthesis Engine ─────
+        // ───── Speech Synthesis Engine (Built from scratch) ─────
         let voiceEnabled = true;
         let currentLang = 'en-US';
-        let voicesLoaded = false;
+        let speechQueue = [];
+        let isSpeaking = false;
 
-        // Wait for voices to load
-        function ensureVoicesLoaded() {
-            return new Promise((resolve) => {
-                const voices = window.speechSynthesis.getVoices();
-                if (voices.length > 0) {
-                    voicesLoaded = true;
-                    console.log('Voices loaded:', voices.length, 'voices available');
-                    resolve(voices);
-                } else {
-                    window.speechSynthesis.onvoiceschanged = () => {
-                        const voices = window.speechSynthesis.getVoices();
-                        voicesLoaded = true;
-                        console.log('Voices loaded (after wait):', voices.length, 'voices available');
-                        resolve(voices);
-                    };
-                }
-            });
+        // Simple speech function - NO cancel, NO async complexity
+        function speakNow(text) {
+            if (!voiceEnabled || !window.speechSynthesis) {
+                console.log('Speech not available');
+                return;
+            }
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = currentLang;
+            utterance.rate = 0.9;
+            utterance.pitch = 1.0;
+            utterance.volume = 1.0;
+
+            utterance.onstart = () => {
+                isSpeaking = true;
+                console.log('🗣️ Speaking:', text.substring(0, 60));
+            };
+
+            utterance.onend = () => {
+                isSpeaking = false;
+                console.log('✅ Finished speaking');
+                processQueue();
+            };
+
+            utterance.onerror = (e) => {
+                isSpeaking = false;
+                console.error('❌ Speech error:', e.error);
+                processQueue();
+            };
+
+            window.speechSynthesis.speak(utterance);
         }
 
-        // Load voices on page load
-        if ('speechSynthesis' in window) {
-            ensureVoicesLoaded();
+        // Queue system to prevent overlap
+        function queueSpeech(text) {
+            speechQueue.push(text);
+            if (!isSpeaking) {
+                processQueue();
+            }
+        }
+
+        function processQueue() {
+            if (speechQueue.length > 0 && !isSpeaking) {
+                const text = speechQueue.shift();
+                speakNow(text);
+            }
+        }
+
+        function stopAllSpeech() {
+            speechQueue = [];
+            isSpeaking = false;
+            if (window.speechSynthesis) {
+                window.speechSynthesis.cancel();
+            }
+            console.log('🛑 All speech stopped');
         }
 
         const translations = {
@@ -617,61 +651,9 @@
             }
         };
 
-        async function speak(text, options = {}) {
-            if (!voiceEnabled || !('speechSynthesis' in window)) {
-                console.log('Speech disabled or not supported');
-                return;
-            }
-
-            // Ensure voices are loaded
-            await ensureVoicesLoaded();
-
-            // Resume if paused (helps with browser restrictions)
-            if (window.speechSynthesis.paused) {
-                window.speechSynthesis.resume();
-            }
-
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = currentLang;
-            utterance.rate = options.rate || 0.85;  // Slower for meditation
-            utterance.pitch = options.pitch || 0.9; // Slightly lower pitch
-            utterance.volume = options.volume || 1.0; // Full volume
-
-            // Try to select a better voice if available
-            const voices = window.speechSynthesis.getVoices();
-            console.log('Available voices:', voices.length);
-
-            const preferredVoice = voices.find(v =>
-                v.lang.startsWith(currentLang.split('-')[0]) &&
-                (v.name.includes('Female') || v.name.includes('Nora') || v.name.includes('Samantha'))
-            );
-
-            if (preferredVoice) {
-                utterance.voice = preferredVoice;
-                console.log('Using voice:', preferredVoice.name);
-            } else {
-                console.log('Using default voice');
-            }
-
-            // Add event listeners for debugging
-            utterance.onstart = () => console.log('✅ Speech started:', text.substring(0, 50));
-            utterance.onend = () => console.log('✅ Speech ended');
-            utterance.onerror = (e) => {
-                console.error('❌ Speech error:', e.error, e);
-                // Try to resume on error
-                setTimeout(() => {
-                    if (window.speechSynthesis.speaking) {
-                        window.speechSynthesis.resume();
-                    }
-                }, 100);
-            };
-
-            try {
-                window.speechSynthesis.speak(utterance);
-                console.log('🎤 Speak command issued');
-            } catch (error) {
-                console.error('❌ Exception while speaking:', error);
-            }
+        function speak(text, options = {}) {
+            // Simple wrapper - just queue the speech
+            queueSpeech(text);
         }
 
         function translate(key) {
@@ -1175,7 +1157,7 @@ One more deep breath... and let it go.
         function clearScheduledEvents() {
             scheduledEvents.forEach(id => clearTimeout(id));
             scheduledEvents = [];
-            window.speechSynthesis.cancel();
+            stopAllSpeech();
         }
 
         // ───── Audio Engine ─────
@@ -1482,18 +1464,9 @@ One more deep breath... and let it go.
 
         function gTick() { gRemaining--; gUpdate(); if (gRemaining <= 0) gFinish(); }
 
-        gStartBtn.addEventListener('click', async () => {
+        gStartBtn.addEventListener('click', () => {
             if (gRunning) return;
             gRunning = true; hideMsg(gMsg);
-
-            // Warm up speech synthesis on first click (browser permission)
-            if ('speechSynthesis' in window && voiceEnabled) {
-                // Create a silent utterance to activate speech synthesis
-                const warmup = new SpeechSynthesisUtterance(' ');
-                warmup.volume = 0;
-                window.speechSynthesis.speak(warmup);
-                await new Promise(resolve => setTimeout(resolve, 50));
-            }
 
             // Voice announcement
             const wasReset = gRemaining === gTotal;
@@ -1503,6 +1476,7 @@ One more deep breath... and let it go.
                 // Schedule guided meditation script
                 const durationMinutes = Math.floor(gTotal / 60);
                 const scriptKey = getScriptKey(gTheme, durationMinutes);
+                console.log('📝 Script key:', scriptKey, 'Duration:', durationMinutes, 'min');
                 if (scriptKey) {
                     scheduleGuidedMeditation(scriptKey, gTotal);
                 }
