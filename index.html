@@ -411,6 +411,9 @@
                     <option value="nb-NO">Norsk</option>
                 </select>
             </div>
+            <div class="voice-control-group">
+                <button class="pill" id="test-voice-btn" style="cursor: pointer;">🎤 Test Voice</button>
+            </div>
         </div>
 
         <!-- ====== GUIDED MODE ====== -->
@@ -1414,6 +1417,26 @@ One more deep breath... and let it go.
 
         langSelect.addEventListener('change', (e) => {
             currentLang = e.target.value;
+        });
+
+        // ───── Test Voice Button (Simple Direct Test) ─────
+        const testVoiceBtn = document.getElementById('test-voice-btn');
+        testVoiceBtn.addEventListener('click', () => {
+            console.log('🧪 Test Voice button clicked');
+
+            // Simplest possible speech synthesis - no async, no delays
+            const utterance = new SpeechSynthesisUtterance('Testing voice. Can you hear me?');
+            utterance.lang = 'en-US';
+            utterance.rate = 1.0;
+            utterance.pitch = 1.0;
+            utterance.volume = 1.0;
+
+            utterance.onstart = () => console.log('✅ TEST: Speech started');
+            utterance.onend = () => console.log('✅ TEST: Speech ended');
+            utterance.onerror = (e) => console.error('❌ TEST: Speech error:', e.error, e);
+
+            window.speechSynthesis.speak(utterance);
+            console.log('🎤 TEST: Speak command issued');
         });
 
         // ───── Guided Meditation Toggle ─────
